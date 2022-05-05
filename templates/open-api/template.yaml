@@ -1,0 +1,156 @@
+openapi: 3.0.2
+info:
+    title: '{{name}} Service APIs'
+    version: '{{version}}.0'
+    description: '
+        Example description
+    '
+servers:
+    -
+        url: 'http://localhost:{{port-mock}}'
+        description: Prism mock server
+    -
+        url: 'http://localhost:{{port-api}}'
+        description: Local alpha server
+
+tags:
+    - name: {{name}} v{{version}}
+      description: All new endpoints for {{name}}
+
+paths:
+    /v{{version}}/example/{exampleId}:
+        get:
+            summary: Example GET endpoint
+            description: '
+                Example GET description
+            '
+            operationId: exampleGet
+            responses:
+                200:
+                    description: Example repsonse
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Example'
+                404:
+                    description: Object with that ID not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+            parameters:
+                - $ref: '#/components/parameters/exampleId'
+            tags:
+                - {{name}} v{{version}}
+            # Add in example AWS and Uaccount tags
+
+    /v{{version}}/example:
+        post:
+            summary: 'Example POST endpoint'
+            operationId: examplePost
+            description: '
+                Example POST description
+            '
+            responses:
+                200:
+                    description: An example object
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Example'
+                404:
+                    description: Product with that ID not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+            parameters:
+                - $ref: '#/components/parameters/exampleId'
+            tags:
+                - {{name}} v{{version}}
+
+    /v{{version}}/{{name}}/health:
+        get:
+            summary: Returns whether or not this service is healthy
+            description: 'All services will need their own health status if they are to be independent.'
+            operationId: {{name}}Health
+            responses:
+                200:
+                    description: 'OK - everything healthy'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Health'
+                500:
+                    description: 'Something is not healthy'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+            tags:
+                - {{name}} v{{version}}
+
+components:
+    schemas:
+        Example:
+            type: object
+            properties:
+                exampleId:
+                    type: integer
+                    minimum: 1
+                    maximum: 200
+                    description: The object ID.
+                active:
+                    type: boolean
+                    description: Is this object active?
+                    example: true
+                description:
+                    type: string
+                    description: Description of the object
+                    example: A description
+                    minLength: 5
+                    maxLength: 50
+        Health:
+            type: object
+            properties:
+                status:
+                    type: string
+                    minimum: 1
+                    maximum: 20
+                    description: Is this healthy or unhealthy
+                    example: Healthy
+        Error:
+            type: object
+            description: Any kind of error condition
+            properties:
+                errorCode:
+                    type: integer
+                    example: 404
+                    minimum: 400
+                    maximum: 599
+                developerMessage:
+                    type: string
+                    description: Verbose, plain language description of the problem. Provide developers suggestions about how to solve their problems here
+                    example: a message
+                userMessage:
+                    type: string
+                    description: This is a nice clear message that can be passed along to end-users, if needed.
+                    example: a message
+                moreInfo:
+                    type: string
+                    description: Link to any further information - can be null
+                    example: https://uaccount.uk/link-to-page-with-more-info
+
+    parameters:
+        exampleId:
+            in: path
+            name: exampleId
+            required: true
+            schema:
+                type: integer
+            description: The internal object ID
+
+# Additional parameters for the mock server
+x-json-schema-faker:
+    min-items: 2
+    max-items: 8
